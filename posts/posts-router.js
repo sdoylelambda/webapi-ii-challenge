@@ -53,7 +53,7 @@ router.get('/:id', async (req, res) => {
       })
   })
   
-  router.post('/:id/messages', async (req, res) => {
+  router.post('/:id/comments', async (req, res) => {
       const messageInfo = { ...req.body, hub_id: req.params.id };
       try {
         const message = await Hubs.addMessage(messageInfo);
@@ -69,11 +69,16 @@ router.get('/:id', async (req, res) => {
   router.post('/', async (req, res) => {
     try {
       const hub = await Hubs.add(req.body);
+      if (title.length > 0 && body.length > 0) {
       res.status(201).json(hub);
-    } catch (error) {
+    } else { 
+      res.status(400).json({ errorMessage: "Please provide title and contents for the post."});
+    }
+  }
+      catch (error) {
       console.log(error);
       res.status(500).json({
-        message: 'Error adding the hub',
+        error: 'There was an error while saving the post to the database',
       });
     }
   });
