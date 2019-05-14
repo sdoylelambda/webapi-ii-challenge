@@ -1,17 +1,17 @@
 const express = require('express');
 
-const Hubs = require('../posts/posts-router');
+const Hubs = require('./db.js');
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
     try {
-        const hubs = await Hubs.find(req.query);
-        res.status(200).json(posts);
+        const hubs = await Hubs.find();
+        res.status(200).json(hubs);
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            message: 'Error retrieving posts.',
+            message: 'The posts information could not be retrieved.',
         });
     }
 });
@@ -30,12 +30,12 @@ router.get('/:id', async (req, res) => {
       // log error to database
       console.log(error);
       res.status(500).json({
-        message: 'Error retrieving the hub',
+        message: 'The post with the specified ID does not exist.',
       });
     }
   });
   
-  router.get('/:id/messages', (req, res) => {
+  router.get('/:id/comments', (req, res) => {
     const { id } = req.params;
   
     Hubs.findHubMessages(id)
@@ -43,7 +43,7 @@ router.get('/:id', async (req, res) => {
         if (messages.length > 0) {
           res.status(200).json(messages);
         } else {
-          res.status(404).json({ message: 'No messages for this hub' });
+          res.status(404).json({ message: 'The post with the specified ID does not exist.' });
         }
       })
       .catch(err => {
@@ -60,8 +60,8 @@ router.get('/:id', async (req, res) => {
         res.status(201).json(message);
       } catch (error) {
         console.log(error);
-        res.status(400).json({
-          message: 'Please provide title and contents for the post.',
+        res.status(404).json({
+          message: 'The post with the specified ID does not exist.',
         });
       }
     });
